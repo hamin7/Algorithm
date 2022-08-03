@@ -1,73 +1,114 @@
+/**
+ * @문제 장난감 조립_G2
+ * @날짜 220228
+ * @분류 DP / 위상 정렬
+ * @조건
+ * # 3 <= N, M <= 100
+ * @풀이
+ * # 위상 정렬
+ * - 부품 간 관계를 그래프로 나타낸다.
+ * - 기본 부품? 초기에 indegree가 0인 부품들
+ * - 위상 정렬 순서로 진행하면서 각 중간 부품(완제품 포함)에 필요한 기본 부품들 개수를 누적한다.
+ * @comments
+ * # 시간 복잡도: O(NM)
+ * # 공간 복잡도: O(N)
+ * # 정답의 최대치: Integer
+ */
+
 package problemSolving;
 
 import java.io.*;
 import java.util.*;
 
 public class Main {
-    static ArrayList<Node>[] list;
-    static int[] indegree_y;
+
+    static StringBuilder sb = new StringBuilder();
+
+    static class Edge {
+        int vertex, weight;
+
+        public Edge(int vertex, int weight) {
+            this.vertex = vertex;
+            this.weight = weight;
+        }
+    }
+
+    static int N, M;
+    static ArrayList<Edge>[] adjList;
+    static int[] indegree;
+    static int[][] counts;
 
     public static void main(String[] args) throws NumberFormatException, IOException {
+        input();
+        solve();
+        print();
+    }
+
+    static void input() throws IOException {
         System.setIn(new FileInputStream("/Users/hamin/eclipse-workspace/BaekjoonOnlineJudge/src/problemSolving/input.txt"));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-        int n = Integer.parseInt(br.readLine());
-        int m = Integer.parseInt(br.readLine());
-
-        list = new ArrayList[n + 1];
-
-        for (int i = 1; i <= n; i++) {
-            list[i] = new ArrayList<>();
+        N = Integer.parseInt(br.readLine());
+        M = Integer.parseInt(br.readLine());
+        // init
+        adjList = new ArrayList[N + 1];
+        for (int i = 1; i <= N; i++) {
+            adjList[i] = new ArrayList<>();
         }
+        indegree = new int[N + 1];
+        counts = new int[N + 1][N + 1];
 
-        int[] indegree_x = new int[n + 1];      // 기본 부품 찾기 용도
-        indegree_y = new int[n + 1];      // 위성정렬 용도
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine(), " ");
+            int to = Integer.parseInt(st.nextToken());
+            int from = Integer.parseInt(st.nextToken());
+            int weight = Integer.parseInt(st.nextToken());
 
-        for (int i = 0; i < m; i++) {
-            String str = br.readLine();
-            StringTokenizer st = new StringTokenizer(str);
-            int x = Integer.parseInt(st.nextToken());
-            int y = Integer.parseInt(st.nextToken());
-            int k = Integer.parseInt(st.nextToken());
-            list[x].add(new Node(y, k));
-            indegree_x[x]++;
-            indegree_y[y]++;
-        }
-        // 입력 끝
-
-        int[] result = topologySort(n);
-        for (int i = 1; i <= n; i++) {
-            if (indegree_x[i] == 0)
-                System.out.println(i + " " + result[i]);
+            adjList[from].add(new Edge(to, weight));
+            indegree[to]++;
         }
     }
 
-    public static class Node {
-        int num, count;
-
-        public Node(int num, int count) {
-            this.num = num;
-            this.count = count;
-        }
-    }
-
-    public static int[] topologySort(int n) {
-        Queue<Node> q = new LinkedList<>();
-        q.offer(new Node(n, 1));
-        int[] counter = new int[n + 1];
-        counter[n] = 1;
-
-        while (!q.isEmpty()) {
-            Node current = q.poll();
-
-            for (int i = 0; i < list[current.num].size(); i++) {
-                Node next = list[current.num].get(i);
-                counter[next.num] += counter[current.num] * next.count;
-                indegree_y[next.num]--;
-                if (indegree_y[next.num] == 0)
-                    q.offer(new Node(next.num, counter[next.num]));
+    static void solve() {
+        Queue<Integer> q = new LinkedList<>();
+        // init
+        for (int i = 1; i <= N; i++) {
+            if (indegree[i] == 0) {
+                q.offer(i);
+                counts[i][i] = 1;
             }
         }
-        return counter;
+
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+
+            for (Edge adjEdge : adjList[cur]) {
+                int adjVertex = adjEdge.vertex;
+                int adjWeight = adjEdge.weight;
+
+                indegree[adjVertex]--;
+                for (int c = 1; c <= N; c++) {
+                    if (counts[cur][c] == 0) {
+                        continue;
+                    }
+                    counts[adjVertex][c] += counts[cur][c] * adjWeight;
+                }
+
+                if (indegree[adjVertex] == 0) {
+                    q.offer(adjVertex);
+                }
+            }
+        }
+    }
+
+    static void print() {
+        for (int c = 1; c <= N; c++) {
+            if (counts[N][c] > 0) {
+                sb.append(c).append(" ").append(counts[N][c]).append("\n");
+            }
+        }
+
+        System.out.println(sb.toString());
     }
 }
