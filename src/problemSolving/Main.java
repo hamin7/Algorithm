@@ -1,68 +1,73 @@
 package problemSolving;
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class Main {
-    static String scroll, devil, angel;
-    static int[][][] dp;
-    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
+    static ArrayList<Character> policyList = new ArrayList<>();
+    static ArrayList<Character> result = new ArrayList<>();
+    static int m = 6;
+    static boolean[] visit = new boolean[6];
+    static int[] alpha = new int[4];
+    static int ans;
 
     public static void main(String[] args) throws IOException {
         input();
-        bw.write(crossingBridge(0, 0, 2) + "\n");
-        bw.flush();
-        bw.close();
+        countAlpha();
+        dfs();
+        System.out.println("중복 제거 전 순열 갯수 : " + ans);
+        removeDuplication();
+        System.out.println("중복 제거 후 순열 갯수 : " + ans);
     }
 
     static void input() throws IOException {
-        System.setIn(new FileInputStream("/Users/leehamin/Algorithm/src/input.txt"));
-        scroll = br.readLine();
-        devil = br.readLine();
-        angel = br.readLine();
-        fillDpArray();
-        br.close();
+        System.setIn(new FileInputStream("/Users/hamin/eclipse-workspace/BaekjoonOnlineJudge/src/problemSolving/input.txt"));
+        policyList.add('a');
+        policyList.add('a');
+        policyList.add('b');
+        policyList.add('b');
+        policyList.add('c');
+        policyList.add('c');
     }
 
-    static void fillDpArray() {
-        dp = new int[scroll.length() + 1][devil.length() + 1][3];
-        for (int i = 0; i < scroll.length() + 1; i++) {
-            for (int j = 0; j < devil.length() + 1; j++) {
-                Arrays.fill(dp[i][j], -1);
+    static void countAlpha() {
+        for (int i = 0; i < policyList.size(); i++) {
+            alpha[policyList.get(i) - 'a']++;
+        }
+    }
+
+    static void dfs() {
+        if (result.size() == m) {
+            ans++;
+            return;
+        }
+        for (int i = 0; i < policyList.size(); i++) {
+            if (!visit[i]) {
+                visit[i] = true;
+                result.add(policyList.get(i));
+                dfs();
+                result.remove(result.size() - 1);
+                visit[i] = false;
             }
         }
     }
 
-    static int crossingBridge(int cnt, int idx, int prev) {
-        if (cnt == scroll.length()) return 1;
-        if (cnt >= devil.length()) return 0;
-        if (dp[cnt][idx][prev] != -1) return dp[cnt][idx][prev];
-
-        dp[cnt][idx][prev] = calculateDp(cnt, idx, prev);
-        return dp[cnt][idx][prev];
-    }
-
-    static int calculateDp(int cnt, int idx, int prev) {
-        int ret = 0;
-        if (prev != 0) ret = useDevilBridge(cnt, idx, ret);
-        if (prev != 1) ret = useAngelBridge(cnt, idx, ret);
-        return ret;
-    }
-
-    static int useDevilBridge(int cnt, int idx, int ret) {
-        for (int i = idx; i < devil.length(); i++) {
-            if (scroll.charAt(cnt) == devil.charAt(i))
-                ret += crossingBridge(cnt + 1, i + 1, 0);
+    static void removeDuplication() {
+        for (int i = 0; i < alpha.length; i++) {
+            if (alpha[i] > 1) {
+                // 중복되는 원소라면
+                ans = ans / fact(alpha[i]);
+            }
         }
-        return ret;
     }
 
-    static int useAngelBridge(int cnt, int idx, int ret) {
-        for (int i = idx; i < angel.length(); i++) {
-            if (scroll.charAt(cnt) == angel.charAt(i)) ret += crossingBridge(cnt + 1, i + 1, 1);
+    static int fact(int n) {
+        int res = 1;
+        while (n > 0) {
+            res = res * n;
+            n--;
         }
-        return ret;
+        return res;
     }
 }
