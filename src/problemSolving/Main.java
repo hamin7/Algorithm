@@ -1,73 +1,98 @@
 package problemSolving;
 
 import java.io.*;
-import java.util.ArrayList;
 
 public class Main {
 
-    static ArrayList<Character> policyList = new ArrayList<>();
-    static ArrayList<Character> result = new ArrayList<>();
-    static int m = 6;
-    static boolean[] visit = new boolean[6];
-    static int[] alpha = new int[4];
-    static int ans;
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    static int M;
+    static int N;
+    static Boolean[][] gallery;
 
     public static void main(String[] args) throws IOException {
         input();
-        countAlpha();
-        dfs();
-        System.out.println("중복 제거 전 순열 갯수 : " + ans);
-        removeDuplication();
-        System.out.println("중복 제거 후 순열 갯수 : " + ans);
+        func();
     }
 
     static void input() throws IOException {
         System.setIn(new FileInputStream("/Users/hamin/eclipse-workspace/BaekjoonOnlineJudge/src/problemSolving/input.txt"));
-        policyList.add('a');
-        policyList.add('a');
-        policyList.add('b');
-        policyList.add('b');
-        policyList.add('c');
-        policyList.add('c');
-    }
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] size = br.readLine().split(" ");
+        M = Integer.parseInt(size[0]);
+        N = Integer.parseInt(size[1]);
+        gallery = new Boolean[M][N];
 
-    static void countAlpha() {
-        for (int i = 0; i < policyList.size(); i++) {
-            alpha[policyList.get(i) - 'a']++;
-        }
-    }
-
-    static void dfs() {
-        if (result.size() == m) {
-            ans++;
-            return;
-        }
-        for (int i = 0; i < policyList.size(); i++) {
-            if (!visit[i]) {
-                visit[i] = true;
-                result.add(policyList.get(i));
-                dfs();
-                result.remove(result.size() - 1);
-                visit[i] = false;
+        for (int i = 0; i < M; i++) {
+            String[] line = br.readLine().split("");
+            for (int j = 0; j < N; j++) {
+                if (line[j].charAt(0) == 'X') {
+                    gallery[i][j] = false;
+                } else {
+                    gallery[i][j] = true;
+                }
             }
         }
     }
 
-    static void removeDuplication() {
-        for (int i = 0; i < alpha.length; i++) {
-            if (alpha[i] > 1) {
-                // 중복되는 원소라면
-                ans = ans / fact(alpha[i]);
-            }
-        }
-    }
+    static void func() {
+        int res = 0;
 
-    static int fact(int n) {
-        int res = 1;
-        while (n > 0) {
-            res = res * n;
-            n--;
+        // 윗벽 탐색
+        for (int k = 1; k < M - 1; k++) {
+            int cnt = 0;
+            for (int l = 1; l < N - 1; l++) {
+                if (gallery[k][l] && !gallery[k - 1][l])
+                    cnt++;
+                else {
+                    res += cnt / 2;
+                    cnt = 0;
+                }
+            }
+            res += cnt / 2;
         }
-        return res;
+
+        // 아랫벽 탐색
+        for (int k = 1; k < M - 1; k++) {
+            int cnt = 0;
+            for (int l = 1; l < N - 1; l++) {
+                if (gallery[k][l] && !gallery[k + 1][l])
+                    cnt++;
+                else{
+                    res += cnt / 2;
+                    cnt = 0;
+                }
+            }
+            res += cnt / 2;
+        }
+
+        // 왼벽 탐색
+        for (int k = 1; k < N - 1; k++) {
+            int cnt = 0;
+            for (int l = 1; l < M - 1; l++) {
+                if (gallery[l][k] && !gallery[l][k - 1])
+                    cnt++;
+                else{
+                    res += cnt / 2;
+                    cnt = 0;
+                }
+            }
+            res += cnt / 2;
+        }
+
+        // 오른벽 탐색
+        for (int k = 1; k < N - 1; k++) {
+            int cnt = 0;
+            for (int l = 1; l < M - 1; l++) {
+                if (gallery[l][k] && !gallery[l][k + 1])
+                    cnt++;
+                else{
+                    res += cnt / 2;
+                    cnt = 0;
+                }
+            }
+            res += cnt / 2;
+        }
+
+        System.out.println(res);
     }
 }
