@@ -1,110 +1,56 @@
 package problemSolving;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class Main {
 
     static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-    static int M;
-    static int N;
-    static Boolean[][] gallery;
-    static int res = 0;
+    static int N, M;
+    static ArrayList<ArrayList> inputBirdList = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
-        inputSize();
-        upperSearch();
-        bottomSearch();
-        leftSearch();
-        rightSearch();
-        printResult();
+        input();
+        print(removeOneBird(inputBirdList, 0));
     }
 
-    static void inputSize() throws IOException {
+    static void input() throws IOException {
         System.setIn(new FileInputStream("/Users/hamin/eclipse-workspace/BaekjoonOnlineJudge/src/problemSolving/input.txt"));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String[] size = br.readLine().split(" ");
-        M = Integer.parseInt(size[0]);
-        N = Integer.parseInt(size[1]);
-        gallery = new Boolean[M][N];
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        for (int i = 0; i < M; i++) {
-            String[] line = br.readLine().split("");
-            for (int j = 0; j < N; j++) {
-                if (line[j].charAt(0) == 'X') {
-                    gallery[i][j] = false;
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+
+        for (int i = 0; i < N; i++) {
+            st = new StringTokenizer(br.readLine());
+            char direction = st.nextToken().charAt(0);
+            String tempSing = st.nextToken();
+            ArrayList<Integer> birdSing = new ArrayList<>();
+            for (int j = 0; j < M; j++) {
+                if ((tempSing.charAt(j) - '0') == 1) {
+                    if (direction == 'L') {
+                        birdSing.add(-1);
+                    } else {
+                        birdSing.add(1);
+                    }
                 } else {
-                    gallery[i][j] = true;
+                    birdSing.add(0);
                 }
             }
+            inputBirdList.add(birdSing);
         }
     }
 
-    static void upperSearch() {
-        // 윗벽 탐색
-        for (int k = 1; k < M - 1; k++) {
-            int cnt = 0;
-            for (int l = 1; l < N - 1; l++) {
-                if (gallery[k][l] && !gallery[k - 1][l])
-                    cnt++;
-                else {
-                    res += cnt / 2;
-                    cnt = 0;
-                }
-            }
-            res += cnt / 2;
-        }
+    static ArrayList<ArrayList> removeOneBird(ArrayList<ArrayList> birdList, int i) {
+        birdList.remove(i);
+        return birdList;
     }
 
-    static void bottomSearch() {
-        // 아랫벽 탐색
-        for (int k = 1; k < M - 1; k++) {
-            int cnt = 0;
-            for (int l = 1; l < N - 1; l++) {
-                if (gallery[k][l] && !gallery[k + 1][l])
-                    cnt++;
-                else{
-                    res += cnt / 2;
-                    cnt = 0;
-                }
-            }
-            res += cnt / 2;
+    static void print(ArrayList<ArrayList> list) {
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i).toString());
         }
-    }
-
-    static void leftSearch() {
-        // 왼벽 탐색
-        for (int k = 1; k < N - 1; k++) {
-            int cnt = 0;
-            for (int l = 1; l < M - 1; l++) {
-                if (gallery[l][k] && !gallery[l][k - 1])
-                    cnt++;
-                else {
-                    res += cnt / 2;
-                    cnt = 0;
-                }
-            }
-            res += cnt / 2;
-        }
-    }
-
-    static void rightSearch() {
-        // 오른벽 탐색
-        for (int k = 1; k < N - 1; k++) {
-            int cnt = 0;
-            for (int l = 1; l < M - 1; l++) {
-                if (gallery[l][k] && !gallery[l][k + 1])
-                    cnt++;
-                else{
-                    res += cnt / 2;
-                    cnt = 0;
-                }
-            }
-            res += cnt / 2;
-        }
-
-    }
-
-    static void printResult() {
-        System.out.println(res);
     }
 }
