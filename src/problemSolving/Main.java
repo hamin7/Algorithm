@@ -5,52 +5,60 @@ import java.util.*;
 
 public class Main {
 
-    static int numOfNodes, kennyLocation, strength, moveCnt;
-    static ArrayList<Integer>[] edgeList;
-    static int[] depth;
+    public static void main(String[] args) {
+        Solution s = new Solution();
+        int N = 5;
+        int[][] road = {{1,2,1},{2,3,3},{5,2,2},{1,4,2},{5,3,1},{5,4,2}};
+        int K = 3;
+        System.out.println(s.solution(N, road, K));
+    }
+}
 
-    public static void main(String[] args) throws IOException {
-        input();
+class Solution {
+    public int solution(int N, int[][] road, int K) {
+        int answer = 1;     // 1번마을 무조건 갈 수 있음.
+        ArrayList<ArrayList<Node>> list = new ArrayList<>();
+
+        for (int i = 0; i <= N; i++) {
+            list.add(new ArrayList<>());
+        }
+
+        for (int i = 0; i < road.length; i++) {
+            list.get(road[i][0]).add(new Node(road[i][0], road[i][1], road[i][2]));
+            list.get(road[i][1]).add(new Node(road[i][1], road[i][0], road[i][2]));
+        }
+
+        Queue<Node> q = new LinkedList<>();
+        int[] visit = new int[N+1];
+
+        for (int i = 2; i < visit.length; i++) {
+            visit[i] = Integer.MAX_VALUE;       // 방문 배열을 모두 max 값으로 갱신.
+        }
+        q.addAll(list.get(1));      // 1번 마을에서 갈수있는 마을 정보 모두 큐에 담음.
+
+        while(!q.isEmpty()) {
+            // bfs
+            Node n = q.poll();
+            if (visit[n.y] <= visit[n.x] + n.time)
+                continue;
+            visit[n.y] = visit[n.x] + n.time;
+            q.addAll(list.get(n.y));
+        }
+
+        for (int i = 2; i < visit.length; i++) {
+            if (visit[i] <= K)
+                answer++;
+        }
+
+        return answer;
     }
 
-    static void input() throws IOException {
-        System.setIn(new FileInputStream("/Users/hamin/eclipse-workspace/BaekjoonOnlineJudge/src/problemSolving/input.txt"));
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-
-        numOfNodes = Integer.parseInt(st.nextToken());
-        kennyLocation = Integer.parseInt(st.nextToken());
-        strength = Integer.parseInt(st.nextToken());
-
-        depth = new int[numOfNodes + 1];
-        edgeList = new ArrayList[numOfNodes + 1];
-
-        for (int i = 1; i < numOfNodes + 1; i++) {
-            edgeList[i] = new ArrayList<>();
+    static class Node {
+        int x, y, time;
+        Node(int x, int y, int time) {
+            this.x = x;
+            this.y = y;
+            this.time = time;
         }
-
-        for (int i = 0; i < numOfNodes - 1; i++) {
-            st = new StringTokenizer(br.readLine());
-            int node1 = Integer.parseInt(st.nextToken());
-            int node2 = Integer.parseInt(st.nextToken());
-            edgeList[node1].add(node2);
-            edgeList[node2].add(node1);
-        }
-
-        dfs(kennyLocation, -1);
-        System.out.println(moveCnt*2);
-    }
-
-    static int dfs(int idx, int parent) {
-        for (int nxt : edgeList[idx]) {
-            if (nxt != parent) {
-                depth[idx] = Math.max(depth[idx], dfs(nxt, idx) + 1);
-            }
-        }
-
-        if (idx != kennyLocation && depth[idx] >= strength) {
-            moveCnt++;
-        }
-        return depth[idx];
     }
 }
