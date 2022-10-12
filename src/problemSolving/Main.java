@@ -1,99 +1,67 @@
 package problemSolving;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
+    //지표당 2개 옵션
+// n개의 질문 -> 각 질문당 7개 선택지
+// [3,2,1,0,1,2,3]
+// 위 예시처럼 네오형이 비동의, 어피치형이 동의인 경우만 주어지지 않고, 질문에 따라 네오형이 동의, 어피치형이 비동의인 경우도 주어질 수 있습니다.
+// 두 성격 유형 중 사전 순으로 빠른 성격 유형 //질문마다 판단하는 지표를 담은 1차원 문자열 배열 survey와 검사자가 각 질문마다 선택한 선택지를 담은 1차원 정수 배열 choices
+// 1<= survey <=1000 //
+
+    public static String solution(String[] survey, int[] choices) {
+        StringBuilder answer = new StringBuilder();
+        Map<Character, Integer> personalityType = new HashMap<>();
+        //["AN", "CF", "MJ", "RT", "NA"]
+        // [5, 3, 2, 7, 5]
+        for (int i = 0; i < survey.length; i++) {
+            int preOrSur = choices[i] / 4;  // 0이면 앞 1 이면 뒤
+            int score = choices[i] % 4;   // 4면 0 ..
+            if (preOrSur == 0) {
+                // 전자
+                char prefix = survey[i].charAt(0);
+                personalityType.put(prefix, personalityType.getOrDefault(prefix, 0) + (4 - score));
+            } else {
+                // 후자
+                char surfix = survey[i].charAt(1);
+                personalityType.put(surfix, personalityType.getOrDefault(surfix, 0) + score);
+            }
+        }
+
+        int R = personalityType.getOrDefault('R', 0);
+        int T = personalityType.getOrDefault('T', 0);
+        int C = personalityType.getOrDefault('C', 0);
+        int F = personalityType.getOrDefault('F', 0);
+        int J = personalityType.getOrDefault('J', 0);
+        int M = personalityType.getOrDefault('M', 0);
+        int A = personalityType.getOrDefault('A', 0);
+        int N = personalityType.getOrDefault('N', 0);
+        if (R >= T) {
+            answer.append("R");
+        } else {
+            answer.append("T");
+        }
+        if (C >= F) {
+            answer.append("C");
+        } else {
+            answer.append("F");
+        }
+        if (J >= M) {
+            answer.append("J");
+        } else {
+            answer.append("M");
+        }
+        if (A >= N) {
+            answer.append("A");
+        } else {
+            answer.append("N");
+        }
+        return answer.toString();
+    }
 
     public static void main(String[] args) {
-        Solution s = new Solution();
-        String today = "2022.05.19";
-        String[] terms = {"A 6", "B 12", "C 3"};
-        String[] privacies = {"2021.05.02 A", "2021.07.01 B", "2022.02.19 C", "2022.02.20 C"};
-        s.solution(today, terms, privacies);
-    }
-}
-
-class Solution {
-    public int[] solution(String today, String[] terms, String[] privacies) {
-        HashMap<Character, Integer> termsMap = mkTermsMap(terms);
-        ArrayList<Date> expireDates = calculateExpireDates(termsMap, privacies);
-        Date todayDate = mkTodayDate(today);
-        ArrayList<Integer> expiredList = cmpTodayExpire(todayDate, expireDates);
-        return listToString(expiredList);
-    }
-
-    static int[] listToString(ArrayList<Integer> expiredList) {
-        int[] answer = new int[expiredList.size()];
-        for (int i = 0; i < expiredList.size(); i++) {
-            answer[i] = expiredList.get(i);
-//            System.out.println(answer[i]);
-        }
-        return answer;
-    }
-
-    static HashMap<Character, Integer> mkTermsMap(String[] terms) {
-        HashMap<Character, Integer> termsMap = new HashMap<>();
-        for (int i = 0; i < terms.length; i++) {
-            String[] term = terms[i].split(" ");
-            Character termKind = term[0].charAt(0);
-            Integer validity = Integer.parseInt(term[1]);
-            termsMap.put(termKind, validity);
-        }
-        return termsMap;
-    }
-
-    static ArrayList<Date> calculateExpireDates(HashMap<Character, Integer> termsMap, String[] privacies) {
-        ArrayList<Date> expireDates = new ArrayList<>();
-        for(int i = 0; i < privacies.length; i++) {
-            String[] privacy = privacies[i].split(" ");
-            int year = Integer.parseInt(privacy[0].substring(0, 4));
-            int month = Integer.parseInt(privacy[0].substring(5, 7));
-            int day = Integer.parseInt(privacy[0].substring(8, 10));
-
-            month += termsMap.get(privacy[1].charAt(0));
-            if (month > 12) {
-                year++;
-                month -= 12;
-            }
-            Date date = new Date(year, month, day);
-            expireDates.add(date);
-        }
-        return expireDates;
-    }
-
-    static Date mkTodayDate(String today) {
-        int year = Integer.parseInt(today.substring(0, 4));
-        int month = Integer.parseInt(today.substring(5, 7));
-        int day = Integer.parseInt(today.substring(8, 10));
-        return new Date(year, month, day);
-    }
-
-    static ArrayList<Integer> cmpTodayExpire(Date todayDate, ArrayList<Date> expireDates) {
-        ArrayList<Integer> expireList = new ArrayList<>();
-        int index = 1;
-
-        for (Date expire : expireDates) {
-            if (expire.year < todayDate.year) {
-                expireList.add(index);
-            }
-            if ((expire.year == todayDate.year) && (expire.month < todayDate.month)) {
-                expireList.add(index);
-            }
-            if ((expire.year == todayDate.year) && (expire.month == todayDate.month) && (expire.day <= todayDate.day)) {
-                expireList.add(index);
-            }
-            index++;
-        }
-
-        return expireList;
-    }
-
-    static class Date {
-        int year, month, day;
-        Date(int year, int month, int day) {
-            this.year = year;
-            this.month = month;
-            this.day = day;
-        }
+        System.out.println(solution(new String[]{"AN", "CF", "MJ", "RT", "NA"}, new int[]{5, 3, 2, 7, 5}));
     }
 }
