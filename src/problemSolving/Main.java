@@ -4,64 +4,51 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Main {
-    //지표당 2개 옵션
-// n개의 질문 -> 각 질문당 7개 선택지
-// [3,2,1,0,1,2,3]
-// 위 예시처럼 네오형이 비동의, 어피치형이 동의인 경우만 주어지지 않고, 질문에 따라 네오형이 동의, 어피치형이 비동의인 경우도 주어질 수 있습니다.
-// 두 성격 유형 중 사전 순으로 빠른 성격 유형 //질문마다 판단하는 지표를 담은 1차원 문자열 배열 survey와 검사자가 각 질문마다 선택한 선택지를 담은 1차원 정수 배열 choices
-// 1<= survey <=1000 //
+    public int solution(int n) {
+        int[][] soyongdoli = new int[n][n];
+        int i = 0, j = 0;
+        int dir = 0;	// dir 0 : →, dir 1 : ↓, dir 2 : ←, dir 3 : ↑
+        int num = 1;
 
-    public static String solution(String[] survey, int[] choices) {
-        StringBuilder answer = new StringBuilder();
-        Map<Character, Integer> personalityType = new HashMap<>();
-        //["AN", "CF", "MJ", "RT", "NA"]
-        // [5, 3, 2, 7, 5]
-        for (int i = 0; i < survey.length; i++) {
-            int preOrSur = choices[i] / 4;  // 0이면 앞 1 이면 뒤
-            int score = choices[i] % 4;   // 4면 0 ..
-            if (preOrSur == 0) {
-                // 전자
-                char prefix = survey[i].charAt(0);
-                personalityType.put(prefix, personalityType.getOrDefault(prefix, 0) + (4 - score));
-            } else {
-                // 후자
-                char surfix = survey[i].charAt(1);
-                personalityType.put(surfix, personalityType.getOrDefault(surfix, 0) + score);
-            }
+        while (true) {
+            soyongdoli[i][j] = num;
+
+            if(dir==0 && (j==n-1 || j<n-1 && soyongdoli[i][j+1]!=0))
+                dir++;
+            else if(dir==1 && (i==n-1 || i<n-1 && soyongdoli[i+1][j]!=0))
+                dir++;
+            else if(dir==2 && (j==0 || j>0 && soyongdoli[i][j-1]!=0))
+                dir++;
+            else if(dir==3 && (i==0 || i>0 && soyongdoli[i-1][j]!=0))
+                dir=0;
+
+            if(dir==0)j++;
+            else if(dir==1)i++;
+            else if(dir==2)j--;
+            else if(dir==3)i--;
+
+            if(num == Math.pow(n,2)) break;
+            num++;
         }
 
-        int R = personalityType.getOrDefault('R', 0);
-        int T = personalityType.getOrDefault('T', 0);
-        int C = personalityType.getOrDefault('C', 0);
-        int F = personalityType.getOrDefault('F', 0);
-        int J = personalityType.getOrDefault('J', 0);
-        int M = personalityType.getOrDefault('M', 0);
-        int A = personalityType.getOrDefault('A', 0);
-        int N = personalityType.getOrDefault('N', 0);
-        if (R >= T) {
-            answer.append("R");
-        } else {
-            answer.append("T");
+        int answer = 0;
+        for (int index = 0; index < n; index++) {
+            answer += soyongdoli[index][index];
         }
-        if (C >= F) {
-            answer.append("C");
-        } else {
-            answer.append("F");
-        }
-        if (J >= M) {
-            answer.append("J");
-        } else {
-            answer.append("M");
-        }
-        if (A >= N) {
-            answer.append("A");
-        } else {
-            answer.append("N");
-        }
-        return answer.toString();
+        return answer;
     }
 
+    // 아래는 테스트케이스 출력을 해보기 위한 main 메소드입니다.
     public static void main(String[] args) {
-        System.out.println(solution(new String[]{"AN", "CF", "MJ", "RT", "NA"}, new int[]{5, 3, 2, 7, 5}));
+        Main sol = new Main();
+        int n1 = 3;
+        int ret1 = sol.solution(n1);
+        // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
+        System.out.println("solution 메소드의 반환 값은 " + ret1 + " 입니다.");
+
+        int n2 = 2;
+        int ret2 = sol.solution(n2);
+        // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
+        System.out.println("solution 메소드의 반환 값은 " + ret2 + " 입니다.");
     }
 }
