@@ -2,64 +2,60 @@ package problemSolving;
 
 import java.util.*;
 
-class Main {
-    int[] func_a(int[] arr) {
-        int length = arr.length;
-        int[] ret = new int[length*2];
-        for(int i = 0; i < length; i++)
-            ret[i + length] = ret[i] = arr[i];
-        return ret;
+public class Main {
+    public boolean func_a(ArrayList<String> list, String s) {
+        for (int i = 0; i < list.size(); i++)
+            if (s.equals(list.get(i)))
+                return true;
+        return false;
     }
 
-    boolean func_b(int[] first, int[] second){
-        int[] counter = new int[1001];
-        for(int i = 0; i < first.length; i++){
-            counter[first[i]]++;
-            counter[second[i]]--;
-        }
-        for(int i = 0; i < 1001; i++)
-            if(counter[i] != 0)
+    public boolean func_b(String s) {
+        int length = s.length();
+        for (int i = 0; i < length / 2; i++)
+            if (s.charAt(i) != s.charAt(length - i - 1))
                 return false;
         return true;
     }
 
-    boolean func_c(int[] first, int[] second){
-        int length = second.length;
-        for(int i = 0; i < length; i++){
-            int j;
-            for(j = 0; j < length; j++)
-                if(first[i + j] != second[j])
-                    break;
-            if(j == length)
-                return true;
-        }
-        return false;
+    public String func_c(ArrayList<String> palindromes, int k) {
+        Collections.sort(palindromes);
+        if (palindromes.size() < k)
+            return "\"NULL\"";
+        else
+            return palindromes.get(k-1);
     }
 
-    public boolean solution(int[] arrA, int[] arrB) {
-        if(arrA.length != arrB.length)
-            return false;
-        if(func_b(arrA, arrB)) {
-            int[] arrAtemp = func_a(arrA);
-            if(func_c(arrAtemp, arrB))
-                return true;
+    public String solution(String s, int k) {
+        ArrayList<String> palindromes = new ArrayList<String>();
+        int length = s.length();
+        for (int startIdx = 0; startIdx < length; startIdx++) {
+            for (int cnt = 1; cnt < length - startIdx + 1; cnt++) {
+                String subStr = s.substring(startIdx, startIdx + cnt);
+                if (func_b(subStr)) {
+                    if (func_a(palindromes, subStr) == false)
+                        palindromes.add(subStr);
+                }
+            }
         }
-        return false;
+
+        String answer = func_c(palindromes, k);
+        return answer;
     }
 
     // 아래는 테스트케이스 출력을 해보기 위한 main 메소드입니다.
     public static void main(String[] args) {
         Main sol = new Main();
-        int[] arrA1 = {1, 2, 3, 4};
-        int[] arrB1 = {3, 4, 1, 2};
-        boolean ret1 = sol.solution(arrA1, arrB1);
+        String s1 = new String("abcba");
+        int k1 = 4;
+        String ret1 = sol.solution(s1, k1);
 
         // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
-        System.out.println("solution 메소드의 반환 값은 " + ret1 + " 입니다.");
+        System.out.println("solution 메소드의 반환 값은 \"" + ret1 + "\" 입니다.");
 
-        int[] arrA2 = {1, 2, 3, 4};
-        int[] arrB2 = {1, 4, 2, 3};
-        boolean ret2 = sol.solution(arrA2, arrB2);
+        String s2 = new String("ccddcc");
+        int k2 = 7;
+        String ret2 = sol.solution(s2, k2);
 
         // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
         System.out.println("solution 메소드의 반환 값은 " + ret2 + " 입니다.");
