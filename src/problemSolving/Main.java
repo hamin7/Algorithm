@@ -2,60 +2,56 @@ package problemSolving;
 
 import java.util.*;
 
-public class Main {
-    public boolean func_a(ArrayList<String> list, String s) {
-        for (int i = 0; i < list.size(); i++)
-            if (s.equals(list.get(i)))
-                return true;
-        return false;
+class Main {
+    static boolean[][] map = new boolean[8][8];
+    public int solution(String[] bishops) {
+        for (int i = 0; i < bishops.length; i++) {
+            int x = bishops[i].charAt(0) - 'A';
+            int y = bishops[i].charAt(1) - '1';
+            moveBishop(x, y);
+        }
+        int answer = cntFalse();
+        return answer;
     }
 
-    public boolean func_b(String s) {
-        int length = s.length();
-        for (int i = 0; i < length / 2; i++)
-            if (s.charAt(i) != s.charAt(length - i - 1))
-                return false;
-        return true;
+    public void moveBishop(int x, int y) {
+        map[x][y] = true;
+        moveDir(x, y, 1, 1);
+        moveDir(x, y, 1, -1);
+        moveDir(x, y, -1, 1);
+        moveDir(x, y, -1, -1);
     }
 
-    public String func_c(ArrayList<String> palindromes, int k) {
-        Collections.sort(palindromes);
-        if (palindromes.size() < k)
-            return "\"NULL\"";
-        else
-            return palindromes.get(k-1);
+    public void moveDir(int x, int y, int dx, int dy) {
+        while(x>=0 && x<8 && y>=0 && y<8) {
+            map[x][y] = true;
+            x += dx;
+            y += dy;
+        }
     }
 
-    public String solution(String s, int k) {
-        ArrayList<String> palindromes = new ArrayList<String>();
-        int length = s.length();
-        for (int startIdx = 0; startIdx < length; startIdx++) {
-            for (int cnt = 1; cnt < length - startIdx + 1; cnt++) {
-                String subStr = s.substring(startIdx, startIdx + cnt);
-                if (func_b(subStr)) {
-                    if (func_a(palindromes, subStr) == false)
-                        palindromes.add(subStr);
-                }
+    public int cntFalse() {
+        int cnt = 0;
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
+                if (map[i][j] == false)
+                    cnt++;
             }
         }
-
-        String answer = func_c(palindromes, k);
-        return answer;
+        return cnt;
     }
 
     // 아래는 테스트케이스 출력을 해보기 위한 main 메소드입니다.
     public static void main(String[] args) {
         Main sol = new Main();
-        String s1 = new String("abcba");
-        int k1 = 4;
-        String ret1 = sol.solution(s1, k1);
+        String[] bishops1 = {new String("D5")};
+        int ret1 = sol.solution(bishops1);
 
         // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
-        System.out.println("solution 메소드의 반환 값은 \"" + ret1 + "\" 입니다.");
+        System.out.println("solution 메소드의 반환 값은 " + ret1 + " 입니다.");
 
-        String s2 = new String("ccddcc");
-        int k2 = 7;
-        String ret2 = sol.solution(s2, k2);
+        String[] bishops2 = {new String("D5"), new String("E8"), new String("G2")};
+        int ret2 = sol.solution(bishops2);
 
         // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
         System.out.println("solution 메소드의 반환 값은 " + ret2 + " 입니다.");
