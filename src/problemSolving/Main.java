@@ -1,71 +1,44 @@
 package problemSolving;
 
 class Main {
-    final int INC = 0;
-    final int DEC = 1;
-    int[] func_a(int[] arr){
-        int length = arr.length;
-        int[] ret = new int[length];
-        ret[0] = 1;
-        for(int i = 1; i < length; i++){
-            if(arr[i] != arr[i-1])
-                ret[i] = ret[i-1] + 1;
-            else
-                ret[i] = 2;
+    public int solution(int K, int[] numbers, String[] UpDown) {
+        int left = 1;
+        int right = K;
+        for(int i = 0; i < numbers.length; i++){
+            int num = numbers[i];
+            if(UpDown[i].equals("UP"))
+                left = Math.max(numbers[i] + 1, left);
+            else if(UpDown[i].equals("DOWN"))
+                right = Math.min(numbers[i] - 1, right);
+            else if(UpDown[i].equals("RIGHT"))
+                return 1;
         }
-        return ret;
+        return right - left + 1;
     }
-
-    int[] func_b(int[] arr){
-        int length = arr.length;
-        int[] ret = new int[length];
-        ret[0] = -1;
-        for(int i = 1; i < length; i++){
-            if(arr[i] > arr[i-1])
-                ret[i] = INC;
-            else if(arr[i] < arr[i-1])
-                ret[i] = DEC;
-        }
-        return ret;
-    }
-    int func_c(int[] arr){
-        int length = arr.length;
-        int ret = 0;
-        for(int i = 0; i < length; i++)
-            if(ret < arr[i])
-                ret = arr[i];
-        if(ret == 2)
-            return 0;
-        return ret;
-    }
-
-    public int solution(int[] S) {
-        int[] check = func_b(S);
-        int[] dp = func_a(check);
-        int answer = func_c(dp);
-        return answer;
-    }
-
-
-
 
     // 아래는 테스트케이스 출력을 해보기 위한 main 메소드입니다.
     public static void main(String[] args) {
         Main sol = new Main();
-        int[] S1 = {2, 5, 7, 3, 4, 6, 1, 8, 9};
-        int ret1 = sol.solution(S1);
+        int K1 = 10;
+        int[] numbers1 = {4, 9, 6};
+        String[] UpDown1 = {new String("UP"), new String("DOWN"), new String("UP")};
+        int ret1 = sol.solution(K1, numbers1, UpDown1);
 
         // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
         System.out.println("solution 메소드의 반환 값은 " + ret1 + " 입니다.");
 
-        int[] S2 = {4, 3, 2, 1, 10, 6, 9, 7, 8};
-        int ret2 = sol.solution(S2);
+        int K2 = 10;
+        int[] numbers2 = {2, 1, 6};
+        String[] UpDown2 = {new String("UP"), new String("UP"), new String("DOWN")};
+        int ret2 = sol.solution(K2, numbers2, UpDown2);
 
         // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
         System.out.println("solution 메소드의 반환 값은 " + ret2 + " 입니다.");
 
-        int[] S3 = {1, 2, 3, 4, 5};
-        int ret3 = sol.solution(S3);
+        int K3 = 100;
+        int[] numbers3 = {97, 98};
+        String[] UpDown3 = {new String("UP"), new String("RIGHT")};
+        int ret3 = sol.solution(K3, numbers3, UpDown3);
 
         // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
         System.out.println("solution 메소드의 반환 값은 " + ret3 + " 입니다.");
