@@ -1,35 +1,46 @@
 package problemSolving;
 
-class Main {
-    public String solution(int number) {
-        String answer = "";
+import java.util.*;
 
-        int[] numberCount = new int[10];
-        while(number > 0) {
-            numberCount[number % 10]++;
-            number /= 10;
+class Main {
+    public void swap(int[] numbers, int i, int j) {
+        int tmp = numbers[i];
+        numbers[i] = numbers[j];
+        numbers[j] = tmp;
+    }
+
+    public int[] solution(int[] numbers) {
+        int[] answer = {};
+
+        Arrays.sort(numbers);
+        int mid = (numbers.length - 1) / 2;
+        swap(numbers, mid, numbers.length-1);
+
+        int left = mid + 1;
+        int right = numbers.length - 2;
+        while(left <= right) {
+            swap(numbers, left, right);
+            left = left + 1;
+            right = right - 1;
         }
 
-        for(int i = 9; i >= 0; i--)
-            if(numberCount[i] != 0)
-                answer += (String.valueOf(i) + String.valueOf(numberCount[i]));
-
+        answer = numbers;
         return answer;
     }
 
-    // 아래는 테스트케이스 출력을 해보기 위한 main 메소드입니다. 아래에는 잘못된 부분이 없으니, 위의 코드만 수정하세요.
+    // 아래는 테스트케이스 출력을 해보기 위한 main 메소드입니다. 아래에는 잘못된 부분이 없으니 위의 코드만 수정하세요.
     public static void main(String[] args) {
         Main sol = new Main();
-        int number1 = 2433;
-        String ret1 = sol.solution(number1);
+        int[] numbers = {7, 3, 4, 1, 2, 5, 6};
+        int[] ret = sol.solution(numbers);
 
         // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
-        System.out.println("solution 메소드의 반환 값은 \"" + ret1 + "\" 입니다.");
-
-        int number2 = 662244;
-        String ret2 = sol.solution(number2);
-
-        // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
-        System.out.println("solution 메소드의 반환 값은 \"" + ret2 + "\" 입니다.");
+        System.out.print("solution 메소드의 반환 값은 [");
+        for(int i = 0; i < ret.length; i++) {
+            if(i != 0)
+                System.out.print(", ");
+            System.out.print(ret[i]);
+        }
+        System.out.println("] 입니다.");
     }
 }
