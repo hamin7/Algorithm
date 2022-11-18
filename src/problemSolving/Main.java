@@ -1,59 +1,77 @@
 package problemSolving;
 
-// 다음과 같이 import를 사용할 수 있습니다.
-import java.util.*;
-
 class Main {
-    static ArrayList<Integer> sumList = new ArrayList<>();
-    public int solution(int[] arr, int K) {
+    class Job {
+        public int salary;
+
+        public Job() {
+            this.salary = 0;
+        }
+
+        public int getSalary() {
+            return salary;
+        }
+    }
+
+    class PartTimeJob extends Job {
+        public int workHour, payPerHour;
+
+        public PartTimeJob(int workHour, int payPerHour) {
+            this.workHour = workHour;
+            this.payPerHour = payPerHour;
+        }
+
+        public int getSalary() {
+            salary = workHour * payPerHour;
+            if(workHour >= 40)
+                salary += (payPerHour * 8);
+
+            return salary;
+        }
+    }
+
+    class SalesJob extends Job {
+        public int salesResult, payPerSale;
+
+        public SalesJob(int salesResult, int payPerSale) {
+            this.salesResult = salesResult;
+            this.payPerSale = payPerSale;
+        }
+
+        public int getSalary() {
+            if(salesResult > 20)
+                salary = salesResult * payPerSale * 3;
+            else if(salesResult > 10)
+                salary = salesResult * payPerSale * 2;
+            else
+                salary = salesResult * payPerSale;
+
+            return salary;
+        }
+    }
+
+    public int solution(int[][] partTimeJobs, int[][] salesJobs) {
         int answer = 0;
-        boolean[] visited = new boolean[arr.length];
-        combination(arr, visited, 0, arr.length, K);
 
-        return cntKs(K);
-    }
-
-    public static void combination(int[] arr, boolean[] visited, int start, int n, int r) {
-
-        if (r == 0) {
-            sumList.add(sumAllFactor(arr, visited, n));
-            return;
+        for(int i = 0; i < partTimeJobs.length; i++) {
+            PartTimeJob partTimeJob = new PartTimeJob(partTimeJobs[i][0], partTimeJobs[i][1]);
+            answer += partTimeJob.getSalary();
         }
 
-        for (int i = start; i < n; i++) {
-            visited[i] = true;
-            combination(arr, visited, i + 1, n, r-1);
-            visited[i] = false;
+        for(int i = 0; i < salesJobs.length; i++) {
+            SalesJob salesJob = new SalesJob(salesJobs[i][0], salesJobs[i][1]);
+            answer += salesJob.getSalary();
         }
-    }
 
-    public static int sumAllFactor(int[] arr, boolean[] visited, int n) {
-        int sum = 0;
-        for (int i = 0; i < n; i++) {
-            if (visited[i]) {
-                sum += arr[i];
-            }
-        }
-        return sum;
-    }
-
-    public int cntKs(int K) {
-        int cnt = 0;
-        for (int i = 0; i < sumList.size(); i++) {
-            if (sumList.get(i) % K == 0) {
-                cnt++;
-            }
-        }
-        return cnt;
+        return answer;
     }
 
     // 아래는 테스트케이스 출력을 해보기 위한 main 메소드입니다.
     public static void main(String[] args) {
         Main sol = new Main();
-        int[] arr = {1, 2, 3, 4, 5};
-        int K = 3;
-        int ret = sol.solution(arr, K);
-
+        int[][] partTimeJobs = {{10, 5000}, {43, 6800}, {5, 12800}};
+        int[][] salesJobs = {{3, 18000}, {12, 8500}};
+        int ret = sol.solution(partTimeJobs, salesJobs);
 
         // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
         System.out.println("solution 메소드의 반환 값은 " + ret + " 입니다.");
