@@ -4,31 +4,87 @@ package problemSolving;
 import java.util.*;
 
 class Main {
-    public int solution(int K, String[] words) {
-        int line = 0;
-        int space = 0;
-        int idx = 0;
-        while (idx < words.length) {
-            if (space + words[idx].length() + 1 < K) {
-                space += words[idx].length();
-                idx++;
-            } else {
-                line++;
-                space = 0;
+    private static int[] dx = {1, -1, 0, 0};
+    private static int[] dy = {0, 0, 1, -1};
+
+    public int solution(int n, int[][] garden) {
+        int answer = bfs(n, garden);
+
+        return answer;
+    }
+
+    public static int bfs(int n, int[][] garden) {
+        Queue<dot> q = new LinkedList<dot>();
+        int day = 0;
+        int maxDay = 0;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (garden[i][j] == 1) {
+                    q.offer(new dot(i, j, day));
+                }
             }
         }
 
-        return line;
+        while (!q.isEmpty()) {
+            dot dot = q.poll();
+
+            for (int i = 0; i < 4; i++) {
+                int nx = dot.x + dx[i];
+                int ny = dot.y + dy[i];
+
+                if (0 <= nx && nx < n && 0 <= ny && ny < n) {
+                    if (garden[nx][ny] == 0) {
+                        garden[nx][ny] = 1;
+                        q.add(new dot(nx, ny, dot.day + 1));
+                        maxDay = Math.max(maxDay, dot.day + 1);
+                    }
+                }
+            }
+        }
+
+        return maxDay;
+    }
+
+    public static boolean checkFlower(int n, int[][] garden) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (garden[i][j] == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static class dot {
+        int x;
+        int y;
+        int day;
+
+        private dot(int x, int y, int day) {
+            this.x = x;
+            this.y = y;
+            this.day = day;
+        }
     }
 
     // 아래는 테스트케이스 출력을 해보기 위한 main 메소드입니다.
     public static void main(String[] args) {
         Main sol = new Main();
-        int K = 10;
-        String[] words = {new String("nice"), new String("happy"), new String("hello"), new String("world"), new String("hi")};
-        int ret = sol.solution(K, words);
+        int n1 = 3;
+        int[][] garden1 = {{0, 0, 0}, {0, 1, 0}, {0, 0, 0}};
+        int ret1 = sol.solution(n1, garden1);
 
         // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
-        System.out.println("solution 메소드의 반환 값은 " + ret + " 입니다.");
+        System.out.println("solution 메소드의 반환 값은 " + ret1 + " 입니다.");
+
+        int n2 = 2;
+        int[][] garden2 = {{1, 1}, {1, 1}};
+        int ret2 = sol.solution(n2, garden2);
+
+        // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
+        System.out.println("solution 메소드의 반환 값은 " + ret2 + " 입니다.");
+
     }
 }
