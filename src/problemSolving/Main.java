@@ -9,7 +9,7 @@ class Main {
         steps[2] = 2;
         steps[3] = 4;
         for(int i = 4; i <= n; i++)
-            steps[i] = i-1 + steps[i-1];
+            steps[i] = steps[i-1] + steps[i-2] + steps[i-3];
         answer = steps[n];
 
         return answer;
