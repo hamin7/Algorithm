@@ -46,17 +46,6 @@ class Main {
         return maxDay;
     }
 
-    public static boolean checkFlower(int n, int[][] garden) {
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (garden[i][j] == 0) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     public static class dot {
         int x;
         int y;
