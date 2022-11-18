@@ -4,76 +4,58 @@ package problemSolving;
 import java.util.*;
 
 class Main {
-    private static int[] dx = {1, -1, 0, 0};
-    private static int[] dy = {0, 0, 1, -1};
+    static ArrayList<Integer> sumList = new ArrayList<>();
+    public int solution(int[] arr, int K) {
+        int answer = 0;
+        boolean[] visited = new boolean[arr.length];
+        combination(arr, visited, 0, arr.length, K);
 
-    public int solution(int n, int[][] garden) {
-        int answer = bfs(n, garden);
-
-        return answer;
+        return cntKs(K);
     }
 
-    public static int bfs(int n, int[][] garden) {
-        Queue<dot> q = new LinkedList<dot>();
-        int day = 0;
-        int maxDay = 0;
+    public static void combination(int[] arr, boolean[] visited, int start, int n, int r) {
 
+        if (r == 0) {
+            sumList.add(sumAllFactor(arr, visited, n));
+            return;
+        }
+
+        for (int i = start; i < n; i++) {
+            visited[i] = true;
+            combination(arr, visited, i + 1, n, r-1);
+            visited[i] = false;
+        }
+    }
+
+    public static int sumAllFactor(int[] arr, boolean[] visited, int n) {
+        int sum = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (garden[i][j] == 1) {
-                    q.offer(new dot(i, j, day));
-                }
+            if (visited[i]) {
+                sum += arr[i];
             }
         }
-
-        while (!q.isEmpty()) {
-            dot dot = q.poll();
-
-            for (int i = 0; i < 4; i++) {
-                int nx = dot.x + dx[i];
-                int ny = dot.y + dy[i];
-
-                if (0 <= nx && nx < n && 0 <= ny && ny < n) {
-                    if (garden[nx][ny] == 0) {
-                        garden[nx][ny] = 1;
-                        q.add(new dot(nx, ny, dot.day + 1));
-                        maxDay = Math.max(maxDay, dot.day + 1);
-                    }
-                }
-            }
-        }
-
-        return maxDay;
+        return sum;
     }
 
-    public static class dot {
-        int x;
-        int y;
-        int day;
-
-        private dot(int x, int y, int day) {
-            this.x = x;
-            this.y = y;
-            this.day = day;
+    public int cntKs(int K) {
+        int cnt = 0;
+        for (int i = 0; i < sumList.size(); i++) {
+            if (sumList.get(i) % K == 0) {
+                cnt++;
+            }
         }
+        return cnt;
     }
 
     // 아래는 테스트케이스 출력을 해보기 위한 main 메소드입니다.
     public static void main(String[] args) {
         Main sol = new Main();
-        int n1 = 3;
-        int[][] garden1 = {{0, 0, 0}, {0, 1, 0}, {0, 0, 0}};
-        int ret1 = sol.solution(n1, garden1);
+        int[] arr = {1, 2, 3, 4, 5};
+        int K = 3;
+        int ret = sol.solution(arr, K);
+
 
         // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
-        System.out.println("solution 메소드의 반환 값은 " + ret1 + " 입니다.");
-
-        int n2 = 2;
-        int[][] garden2 = {{1, 1}, {1, 1}};
-        int ret2 = sol.solution(n2, garden2);
-
-        // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
-        System.out.println("solution 메소드의 반환 값은 " + ret2 + " 입니다.");
-
+        System.out.println("solution 메소드의 반환 값은 " + ret + " 입니다.");
     }
 }
