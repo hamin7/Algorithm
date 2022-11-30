@@ -1,41 +1,56 @@
 package problemSolving;
 
-public class Solution {
-    public String solution(int[] food) {
-        String answer = "";
-        String half = "";
+import java.util.ArrayList;
 
-        for (int i = 1; i < food.length; i++) {
-            int cnt = food[i];
-            if (cnt % 2 != 0) {
-                cnt--;
+public class Solution {
+    public double[] solution(int k, int[][] ranges) {
+        double[] answer = new double[ranges.length];
+        ArrayList<Double> sequence = new ArrayList<>();
+
+        double index = 0;
+        sequence.add((double) k);
+        while (k != 1) {
+            index++;
+            if (k % 2 == 0) {
+                k /= 2;
+            } else {
+                k *= 3;
+                k++;
             }
-            cnt /= 2;
-            while (cnt > 0) {
-                half += Integer.toString(i);
-                cnt--;
-            }
+            sequence.add((double) k);
         }
 
-        answer = half.concat("0").concat(reverse(half));
+        ArrayList<Double> sizes = new ArrayList<>();
+        for (int i = 0; i < sequence.size() - 1; i++) {
+            sizes.add((sequence.get(i) + sequence.get(i+1)) / 2);
+        }
+
+        for (int i = 0; i < ranges.length; i++) {
+            int left = ranges[i][0];
+            int right = sequence.size() - 1 + ranges[i][1];
+
+            double area = 0;
+
+            if (left <= right) {
+                for (int j = left; j < right; j++) {
+                    area += sizes.get(j);
+                }
+            } else
+                area = -1;
+
+            answer[i] = area;
+        }
+
         return answer;
     }
 
-    public String reverse(String half) {
-        String reversed = "";
-        for (int i = 0; i < half.length(); i++) {
-            reversed += half.charAt(half.length()-i-1);
-        }
-        return reversed;
-    }
-
-    // 아래는 테스트케이스 출력을 해보기 위한 main 메소드입니다.
     public static void main(String[] args) {
 
         Solution sol = new Solution();
-        int[] arr = {1, 3, 4, 6};
-        String ret1 = sol.solution(arr);
+        int k = 5;
+        int[][] arr = {{0,0}, {0,-1}, {2,-3}, {3,-3}};
+        double[] ret1 = sol.solution(k, arr);
 
-        System.out.println("solution 메소드의 반환 값은 \"" + ret1 + "\" 입니다.");
+        System.out.println("solution 메소드의 반환 값은 \"" + ret1.toString() + "\" 입니다.");
     }
 }
