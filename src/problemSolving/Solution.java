@@ -1,66 +1,44 @@
 package problemSolving;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-class Solution {
+public class Solution {
+    HashMap<Integer, Integer> map = new HashMap<>();
 
-    public int solution(int[] arrayA, int[] arrayB) {
-        List<Integer> divisorsA = getDivisors(arrayA);
-        List<Integer> divisorsB = getDivisors(arrayB);
+    public int solution(int k, int[] tangerine) {
 
-        int targetA = getMaxNonDivisor(arrayB, divisorsA);
-        int targetB = getMaxNonDivisor(arrayA, divisorsB);
-
-        return Math.max(targetA, targetB);
-    }
-
-    public List<Integer> getDivisors(int[] arrays) {
-        List<Integer> list = new ArrayList<>();
-        int length = arrays.length;
-        int min = arrays[0];
-        for (int i = 2; i <= min; i++) {
-            boolean isDivide = true;
-            for (int j = 0; j < length; j++) {
-                if (arrays[j] % i != 0) {
-                    isDivide = false;
-                    break;
-                }
-            }
-            if (isDivide) {
-                list.add(i);
-            }
+        for (int each : tangerine) {
+            map.put(each, map.getOrDefault(each, 0) + 1);
         }
-        return list;
+
+        List<Integer> quantityList = mapToList(map);
+        quantityList.sort(Comparator.reverseOrder());
+
+        return packaging(quantityList, k);
     }
 
-    public int getMaxNonDivisor(int[] arrays, List<Integer> divisors) {
-        int target = 0;
-        for (int divisor : divisors) {
-            boolean isNoDivide = true;
-            for (int number : arrays) {
-                if (number % divisor == 0) {
-                    isNoDivide = false;
-                    break;
-                }
-            }
-            if (isNoDivide) {
-                target = Math.max(target, divisor);
-            }
+    public List<Integer> mapToList(HashMap<Integer, Integer> map) {
+        return new ArrayList<>(map.values());
+    }
+
+    public int packaging(List<Integer> quantityList, int k) {
+        int cnt = 0;
+        int idx = 0;
+        while (k > 0) {
+            k -= quantityList.get(idx);
+            idx++;
+            cnt++;
         }
-        return target;
+        return cnt;
     }
 
-    // 아래는 테스트케이스 출력을 해보기 위한 main 메소드입니다.
     public static void main(String[] args) {
+
         Solution sol = new Solution();
+        int k = 6;
+        int[] arr = {1, 3, 2, 5, 4, 5, 2, 3};
+        int ret1 = sol.solution(k, arr);
 
-        int arrA[] = {10, 17};
-        int arrB[] = {5, 20};
-
-        int ret1 = sol.solution(arrA, arrB);
-
-        // [실행] 버튼을 누르면 출력 값을 볼 수 있습니다.
-        System.out.println("solution 메소드의 반환 값은 " + ret1 + " 입니다.");
+        System.out.println("solution 메소드의 반환 값은 \"" + ret1 + "\" 입니다.");
     }
 }
