@@ -4,14 +4,10 @@ public class Solution {
     public long solution(int k, int d) {
         long answer = 0;
 
-        for (int i = 0; i <= d; i++) {
-            long x = i*k;
-            for (int j = 0; j <= d; j++) {
-                long y = j*k;
-                if (Math.pow(x, 2) + Math.pow(y, 2) <= Math.pow(d, 2)) {
-                    answer++;
-                }
-            }
+        for (int i = 0; i <= d/k; i++) {
+            long x = i * k;
+            long y = (long) Math.sqrt((long)Math.pow(d, 2) - (long)Math.pow(x, 2))/k;
+            answer += y + 1;
         }
         return answer;
     }
