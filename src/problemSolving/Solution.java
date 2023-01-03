@@ -1,23 +1,41 @@
 package problemSolving;
 
-public class Solution {
-    public long solution(int k, int d) {
-        long answer = 0;
+import java.util.Collections;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
-        for (int i = 0; i <= d/k; i++) {
-            long x = i * k;
-            long y = (long) Math.sqrt((long)Math.pow(d, 2) - (long)Math.pow(x, 2))/k;
-            answer += y + 1;
+public class Solution {
+    public long solution(int n, int k, int[] enemy) {
+        int answer = enemy.length;
+        Queue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+
+        int my = n;
+        int muJeokGuan = k;
+        for (int i = 0; i < enemy.length; i++) {
+            my -= enemy[i];
+            pq.add(enemy[i]);
+
+            if (my < 0) {
+                if (muJeokGuan > 0 && !pq.isEmpty()) {
+                    my += pq.poll();
+                    muJeokGuan--;
+                } else {
+                    answer = i;
+                    break;
+                }
+            }
         }
+
         return answer;
     }
 
     public static void main(String[] args) {
 
         Solution sol = new Solution();
-        int k = 2;
-        int d = 4;
-        long ret1 = sol.solution(k, d);
+        int n = 7;
+        int k = 3;
+        int[] enemy = {4, 2, 4, 5, 3, 3, 1};
+        long ret1 = sol.solution(n, k, enemy);
 
         System.out.println("solution 메소드의 반환 값은 \"" + ret1 + "\" 입니다.");
     }
