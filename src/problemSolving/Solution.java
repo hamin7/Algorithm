@@ -1,24 +1,28 @@
 package problemSolving;
 
-public class Solution {
-    public long solution(int k, int d) {
-        long answer = 0;
+import java.util.*;
 
-        for (int i = 0; i <= d/k; i++) {
-            long x = i * k;
-            long y = (long) Math.sqrt((long)Math.pow(d, 2) - (long)Math.pow(x, 2))/k;
-            answer += y + 1;
+public class Solution {
+    HashMap<Integer, Integer> map = new HashMap<>();
+
+    public int[] solution(String s) {
+        HashMap<Character, Integer> alpha = new HashMap<>();
+        int[] result = new int[s.length()];
+
+        for (int i = 0; i < s.length(); i++) {
+            if (!alpha.containsKey(s.charAt(i))) result[i] = -1;
+            else result[i] = i - alpha.get(s.charAt(i));
+            alpha.put(s.charAt(i), i);
         }
-        return answer;
+        return result;
     }
 
     public static void main(String[] args) {
 
         Solution sol = new Solution();
-        int k = 2;
-        int d = 4;
-        long ret1 = sol.solution(k, d);
+        String s = "banana";
+        int[] ret1 = sol.solution(s);
 
-        System.out.println("solution 메소드의 반환 값은 \"" + ret1 + "\" 입니다.");
+        System.out.println("solution 메소드의 반환 값은 \"" + Arrays.toString(ret1) + "\" 입니다.");
     }
 }
