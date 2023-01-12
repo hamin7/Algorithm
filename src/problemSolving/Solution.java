@@ -3,26 +3,48 @@ package problemSolving;
 import java.util.*;
 
 public class Solution {
-    HashMap<Integer, Integer> map = new HashMap<>();
 
-    public int[] solution(String s) {
-        HashMap<Character, Integer> alpha = new HashMap<>();
-        int[] result = new int[s.length()];
+    public int solution(int n, long l, long r) {
+        int answer = 0;
 
-        for (int i = 0; i < s.length(); i++) {
-            if (!alpha.containsKey(s.charAt(i))) result[i] = -1;
-            else result[i] = i - alpha.get(s.charAt(i));
-            alpha.put(s.charAt(i), i);
+        for (long i = l; i <= r ; i++){
+            int flag = 1;
+            if (i % 5 == 3){
+                continue;
+            }
+            long temp = i;
+            long result;
+            while (true){
+                if (temp % 5 == 0){
+                    temp = temp / 5;
+                }
+                else {
+                    temp = (temp / 5) + 1;
+                }
+
+                if (temp % 5 == 3){
+                    flag = 0;
+                    break;
+                }
+                else if (temp <= 5){
+                    flag = 1;
+                    break;
+                }
+            }
+
+            if (flag == 1) answer++;
         }
-        return result;
+        return answer;
     }
 
     public static void main(String[] args) {
 
         Solution sol = new Solution();
-        String s = "banana";
-        int[] ret1 = sol.solution(s);
+        int n = 2;
+        int l = 4;
+        int r = 17;
+        int ret1 = sol.solution(n, l, r);
 
-        System.out.println("solution 메소드의 반환 값은 \"" + Arrays.toString(ret1) + "\" 입니다.");
+        System.out.println("solution 메소드의 반환 값은 \"" + ret1 + "\" 입니다.");
     }
 }
