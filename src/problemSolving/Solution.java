@@ -4,37 +4,26 @@ import java.util.*;
 
 public class Solution {
 
+    static long leftTotal;
+    static long rightTotal;
+
     public int solution(int n, long l, long r) {
-        int answer = 0;
+        leftTotal = l;
+        rightTotal = r;
+        long lengthTotal = (long) Math.pow(5, n);
 
-        for (long i = l; i <= r ; i++){
-            int flag = 1;
-            if (i % 5 == 3){
-                continue;
-            }
-            long temp = i;
-            long result;
-            while (true){
-                if (temp % 5 == 0){
-                    temp = temp / 5;
-                }
-                else {
-                    temp = (temp / 5) + 1;
-                }
-
-                if (temp % 5 == 3){
-                    flag = 0;
-                    break;
-                }
-                else if (temp <= 5){
-                    flag = 1;
-                    break;
-                }
-            }
-
-            if (flag == 1) answer++;
-        }
-        return answer;
+        return find(1L, lengthTotal);
+    }
+    static int find(long left, long right) {
+        if(right < leftTotal || left > rightTotal) return 0;
+        if(left == right) return 1;
+        int result = 0;
+        long interval = (right - left + 1L) / 5;
+        result += find(left, left + interval * 1 - 1);
+        result += find(left + interval * 1, left + interval * 2 - 1);
+        result += find(left + interval * 3, left + interval * 4 - 1);
+        result += find(left + interval * 4, right);
+        return result;
     }
 
     public static void main(String[] args) {
