@@ -1,42 +1,85 @@
 package problemSolving;
 
-import java.util.Collections;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 public class Solution {
-    public long solution(int n, int k, int[] enemy) {
-        int answer = enemy.length;
-        Queue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+    public int solution(int x, int y, int n) {
+        int result = 1;
+        int currentNode = x;
+        Set<Integer> nodeSet = new HashSet<>();
 
-        int my = n;
-        int muJeokGuan = k;
-        for (int i = 0; i < enemy.length; i++) {
-            my -= enemy[i];
-            pq.add(enemy[i]);
+        // 처음에 x가 y와 같으면 0 리턴
+        if (x == y) return 0;
 
-            if (my < 0) {
-                if (muJeokGuan > 0 && !pq.isEmpty()) {
-                    my += pq.poll();
-                    muJeokGuan--;
-                } else {
-                    answer = i;
-                    break;
-                }
+        // 처음 nodeSet 만들기
+        // 연산 1
+        currentNode = x + n;
+        if (currentNode < y)
+            nodeSet.add(currentNode);
+        else if (currentNode == y)
+            return 1;
+
+        // 연산 2
+        currentNode = x * 3;
+        if (currentNode < y)
+            nodeSet.add(currentNode);
+        else if (currentNode == y)
+            return 1;
+
+        // 연산 3
+        currentNode = x * 2;
+        if (currentNode < y)
+            nodeSet.add(currentNode);
+        else if (currentNode == y)
+            return 1;
+
+        // nodeSet에서 node 확장
+        mainLoop:
+        while (true) {
+            result++;
+            Set<Integer> newNodeSet = new HashSet<>();
+
+            for (int parentNode : nodeSet) {
+                // 연산 1
+                currentNode = parentNode + n;
+                if (currentNode < y)
+                    newNodeSet.add(currentNode);
+                else if (currentNode == y)
+                    break mainLoop;
+
+                // 연산 2
+                currentNode = parentNode * 3;
+                if (currentNode < y)
+                    newNodeSet.add(currentNode);
+                else if (currentNode == y)
+                    break mainLoop;
+
+                // 연산 3
+                currentNode = parentNode * 2;
+                if (currentNode < y)
+                    newNodeSet.add(currentNode);
+                else if (currentNode == y)
+                    break mainLoop;
             }
+
+            // 새로 생긴 노드가 없다면 -1을 리턴
+            if (newNodeSet.size() == 0) return -1;
+
+            // nodeSet 최신화
+            nodeSet = newNodeSet;
         }
 
-        return answer;
+        return result;
     }
 
     public static void main(String[] args) {
 
         Solution sol = new Solution();
-        int n = 7;
-        int k = 3;
-        int[] enemy = {4, 2, 4, 5, 3, 3, 1};
-        long ret1 = sol.solution(n, k, enemy);
+        int x = 10;
+        int y = 40;
+        int n = 5;
+        long result = sol.solution(x, y, n);
 
-        System.out.println("solution 메소드의 반환 값은 \"" + ret1 + "\" 입니다.");
+        System.out.println("solution 메소드의 반환 값은 \"" + result + "\" 입니다.");
     }
 }
