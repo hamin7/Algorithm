@@ -4,35 +4,49 @@ import java.util.*;
 
 public class Solution {
 
-    static long leftTotal;
-    static long rightTotal;
+    public String[] solution(String[] players, String[] callings) {
+        String[] answer = new String[players.length];
 
-    public int solution(int n, long l, long r) {
-        leftTotal = l;
-        rightTotal = r;
-        long lengthTotal = (long) Math.pow(5, n);
+        HashMap<String, Integer> mappedByPlayer = new HashMap<>();
+        HashMap<Integer, String> mappedByRank = new HashMap<>();
 
-        return find(1L, lengthTotal);
-    }
-    static int find(long left, long right) {
-        if(right < leftTotal || left > rightTotal) return 0;
-        if(left == right) return 1;
-        int result = 0;
-        long interval = (right - left + 1L) / 5;
-        result += find(left, left + interval * 1 - 1);
-        result += find(left + interval * 1, left + interval * 2 - 1);
-        result += find(left + interval * 3, left + interval * 4 - 1);
-        result += find(left + interval * 4, right);
-        return result;
+        // 각각의 맵을 초기화
+        for (int i = 0; i < players.length; i++) {
+            mappedByPlayer.put(players[i], i);
+            mappedByRank.put(i, players[i]);
+        }
+
+        for (int i = 0; i < callings.length; i++) {
+
+            // 추월한 유저 순위
+            // 추월한 유저 이름
+            int currentRank = mappedByPlayer.get(callings[i]);
+            String player = mappedByRank.get(currentRank);
+
+            // 바로 앞 플레이어
+            String frontPlayer = mappedByRank.get(currentRank - 1);
+
+            // swap
+            mappedByPlayer.put(player, currentRank - 1);
+            mappedByPlayer.put(frontPlayer, currentRank);
+
+            mappedByRank.put(currentRank - 1, player);
+            mappedByRank.put(currentRank, frontPlayer);
+        }
+
+        for (int i = 0; i < players.length; i++) {
+            answer[i] = mappedByRank.get(i);
+        }
+
+        return answer;
     }
 
     public static void main(String[] args) {
 
         Solution sol = new Solution();
-        int n = 2;
-        int l = 4;
-        int r = 17;
-        int ret1 = sol.solution(n, l, r);
+        String[] players = {"mumu", "soe", "poe", "kai", "mine"};
+        String[] callings = {"kai", "kai", "mine", "mine"};
+        String[] ret1 = sol.solution(players, callings);
 
         System.out.println("solution 메소드의 반환 값은 \"" + ret1 + "\" 입니다.");
     }
