@@ -1,53 +1,97 @@
 package problemSolving;
 
+import java.io.*;
 import java.util.*;
 
+class Town implements Comparable<Town> {
+    int end;
+    int weight;
+
+    Town(int end, int weight) {
+        this.end = end;
+        this.weight = weight;
+    }
+
+    @Override
+    public int compareTo(Town arg0) {
+        return weight - arg0.weight;
+    }
+}
+
 public class Solution {
+    static final int INF = 987654321;
+    static ArrayList<ArrayList<Town>> arrList, reverse_arrList;
+    static int N, X;
 
-    public String[] solution(String[] players, String[] callings) {
-        String[] answer = new String[players.length];
+    public static void main(String[] args) throws IOException {
+        System.setIn(new FileInputStream("/Users/leehamin/Algorithm/src/problemSolving/input.txt"));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        HashMap<String, Integer> mappedByPlayer = new HashMap<>();
-        HashMap<Integer, String> mappedByRank = new HashMap<>();
+        N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        X = Integer.parseInt(st.nextToken());
 
-        // 각각의 맵을 초기화
-        for (int i = 0; i < players.length; i++) {
-            mappedByPlayer.put(players[i], i);
-            mappedByRank.put(i, players[i]);
+        arrList = new ArrayList<>(); // 문제의 입력을 그대로 받은 배열
+        reverse_arrList = new ArrayList<>(); // 문제의 입력을 반대로 받은 배열
+
+        for (int i = 0; i <= N; i++) {
+            arrList.add(new ArrayList<>());
+            reverse_arrList.add(new ArrayList<>());
         }
 
-        for (int i = 0; i < callings.length; i++) {
+        // arrList와 reverse_arrList를 각각 단방향 인접리스트로 구현
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int start = Integer.parseInt(st.nextToken());
+            int end = Integer.parseInt(st.nextToken());
+            int weight = Integer.parseInt(st.nextToken());
 
-            // 추월한 유저 순위
-            // 추월한 유저 이름
-            int currentRank = mappedByPlayer.get(callings[i]);
-            String player = mappedByRank.get(currentRank);
-
-            // 바로 앞 플레이어
-            String frontPlayer = mappedByRank.get(currentRank - 1);
-
-            // swap
-            mappedByPlayer.put(player, currentRank - 1);
-            mappedByPlayer.put(frontPlayer, currentRank);
-
-            mappedByRank.put(currentRank - 1, player);
-            mappedByRank.put(currentRank, frontPlayer);
+            arrList.get(start).add(new Town(end, weight));
+            reverse_arrList.get(end).add(new Town(start, weight));
         }
 
-        for (int i = 0; i < players.length; i++) {
-            answer[i] = mappedByRank.get(i);
+        int[] dist1 = dijkstra(arrList); // X에서 시작점들 사이의 최단거리
+        int[] dist2 = dijkstra(reverse_arrList); // 시작점들에서 X 사이의 최단거리
+
+        int ans = 0;
+        for (int i = 1; i <= N; i++) {
+            ans = Math.max(ans, dist1[i] + dist2[i]);
         }
 
-        return answer;
+        bw.write(ans + "\n");
+        bw.flush();
+        bw.close();
+        br.close();
     }
 
-    public static void main(String[] args) {
+    // 다익스트라 알고리즘
+    public static int[] dijkstra(ArrayList<ArrayList<Town>> a) {
+        PriorityQueue<Town> pq = new PriorityQueue<>();
+        pq.offer(new Town(X, 0));
 
-        Solution sol = new Solution();
-        String[] players = {"mumu", "soe", "poe", "kai", "mine"};
-        String[] callings = {"kai", "kai", "mine", "mine"};
-        String[] ret1 = sol.solution(players, callings);
+        boolean[] check = new boolean[N + 1];
+        int[] dist = new int[N + 1];
+        Arrays.fill(dist, INF);
+        dist[X] = 0;
 
-        System.out.println("solution 메소드의 반환 값은 \"" + ret1 + "\" 입니다.");
+        while (!pq.isEmpty()) {
+            Town curTown = pq.poll();
+            int cur = curTown.end;
+
+            if (!check[cur]) {
+                check[cur] = true;
+
+                for (Town town : a.get(cur)) {
+                    if (!check[town.end] && dist[town.end] > dist[cur] + town.weight) {
+                        dist[town.end] = dist[cur] + town.weight;
+                        pq.add(new Town(town.end, dist[town.end]));
+                    }
+                }
+            }
+        }
+        return dist;
     }
+
 }
